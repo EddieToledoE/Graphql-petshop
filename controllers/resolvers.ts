@@ -1,5 +1,6 @@
 import petsModels from "../models/pets.models";
 import ownersModels from "../models/owners.models";
+import axios from "axios";
 
 export const resolvers = {
   Query: {
@@ -212,6 +213,19 @@ export const resolvers = {
         console.error("Error removing pet from owner:", error);
         return null;
       }
+    },
+    receiveDiscordWebhookEvent: async (
+      _parent: any,
+      args: { url: any; timestamp: any; author: any; content: any }
+    ) => {
+      const { url, timestamp, author, content } = args;
+      const response = await axios.post(url, {
+        timestamp,
+        author,
+        content,
+      });
+      // Suponiendo que el servidor externo devuelve el evento creado
+      return response.data;
     },
   },
 };
