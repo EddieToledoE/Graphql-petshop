@@ -8,8 +8,6 @@ type DiscordWebhookEvent {
     url: String!
   }
 
-
-
 type Pet {
     id: ID
     name: String
@@ -43,6 +41,13 @@ type PetsPage {
     totalCount: Int
   }
 
+  type User {
+    id : ID
+    name: String
+    email: String
+    password : String
+}
+
 type Query {
   pets(page: Int, pageSize: Int): PetsPage
   pet(id: ID!): Pet
@@ -51,6 +56,8 @@ type Query {
   countPetsperOwner: [Owner]
   countPetsperType: [Pet]
   countPetsperCity: [Owner]
+  users : [User]
+  user(id : ID) : User
 }
 
 input PetInput{
@@ -78,5 +85,7 @@ type Mutation {
     addPetToOwner(petId: ID!, ownerId: ID!): Owner
     removePetFromOwner(petId: ID!, ownerId: ID!): Owner
     receiveDiscordWebhookEvent(url: String!, timestamp: String!, author: String!, content: String!): DiscordWebhookEvent!
+    registerUser(name: String, email : String, password : String) : User
+    logInUser(email : String, password : String) : String 
 }
 `;
