@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsnd --respawn --clear src/index.ts"
+    "dev": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,5 +23,5 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.0",
     "nodemon": "^3.1.0"
-  } 
+  }
 }

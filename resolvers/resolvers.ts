@@ -2,8 +2,9 @@ import petsModels from "../models/pets.models";
 import ownersModels from "../models/owners.models";
 import User from "../models/User";
 import axios from "axios";
-import jwt, { JwtPayload } from 'jsonwebtoken';
-
+import jwt, { JwtPayload } from "jsonwebtoken";
+import webhooksModels from "../models/webhooks.models";
+import { WebhookController } from "./webhookcontroller";
 export const resolvers = {
   Query: {
     pets: async (_: any, { page = 1, pageSize = 10 }: any) => {
@@ -116,10 +117,10 @@ export const resolvers = {
     users: async () => {
       try {
         const res = await User.find();
-        console.log(res)
+        console.log(res);
         return res;
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     },
     user: async (_: void, args: any) => {
@@ -128,18 +129,18 @@ export const resolvers = {
         const res = await User.findById(userId);
         console.log(res);
 
-        return res
+        return res;
       } catch (error) {
         console.log(error);
-
       }
-    }
+    },
   },
   Mutation: {
     addPet: async (root: any, args: { pet: any }) => {
       try {
         const newPet = new petsModels(args.pet);
         const savedPet = await newPet.save();
+        await WebhookController("addPet", savedPet);
         return savedPet;
       } catch (error) {
         console.error("Error adding pet:", error);
@@ -150,6 +151,7 @@ export const resolvers = {
       try {
         const newOwner = new ownersModels(args.owner);
         const savedOwner = await newOwner.save();
+        await WebhookController("addOwner", savedOwner);
         return savedOwner;
       } catch (error) {
         console.error("Error adding owner:", error);
@@ -239,51 +241,51 @@ export const resolvers = {
     },
     receiveDiscordWebhookEvent: async (
       _parent: any,
-      args: { url: any; timestamp: any; author: any; content: any }
+      args: { url: any; events: any }
     ) => {
-      const { url, timestamp, author, content } = args;
-      const response = await axios.post(url, {
-        timestamp,
-        author,
-        content,
+      const { url, events } = args;
+      const createdWebhook = new webhooksModels({
+        url,
+        event: events,
       });
-      // Suponiendo que el servidor externo devuelve el evento creado
-      return response.data;
+      const res = await createdWebhook.save();
+      console.log(res);
+      return res;
     },
     registerUser: async (_: void, args: any) => {
       try {
         const user = new User({
           name: args.name,
           email: args.email,
-          password: args.password
-        })
+          password: args.password,
+        });
         const res = await user.save();
         console.log(res);
-        
+
         return res;
       } catch (error) {
         console.log(error);
-        
       }
     },
     logInUser: async (_: void, args: any) => {
       try {
-        const user = await User.findOne({ email: args.email }).select("+password")
-        console.log(user)
+        const user = await User.findOne({ email: args.email }).select(
+          "+password"
+        );
+        console.log(user);
         if (!user || user.password !== args.password)
-          throw new Error("Credenciales invalidas")
-        const token = generateToken(user)
+          throw new Error("Credenciales invalidas");
+        const token = generateToken(user);
         console.log(token);
         return token;
       } catch (error) {
         console.log(error);
-        return "Credendenciales invalidas"
+        return "Credendenciales invalidas";
       }
-    }
+    },
   },
 };
 
-const generateToken = (user : any) => {
-  return jwt.sign({user}, 'secret', {expiresIn: "1h"}) 
-}
-
+const generateToken = (user: any) => {
+  return jwt.sign({ user }, "secretito123", { expiresIn: "1h" });
+};

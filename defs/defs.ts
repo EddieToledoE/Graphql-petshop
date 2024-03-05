@@ -2,9 +2,7 @@ export const typeDefs = `
 
 type DiscordWebhookEvent {
     id: ID!
-    timestamp: String!
-    author: String
-    content: String!
+    events : [String]
     url: String!
   }
 
@@ -84,7 +82,7 @@ type Mutation {
     updateOwner(id: ID!, name: String, city: String): Owner
     addPetToOwner(petId: ID!, ownerId: ID!): Owner
     removePetFromOwner(petId: ID!, ownerId: ID!): Owner
-    receiveDiscordWebhookEvent(url: String!, timestamp: String!, author: String!, content: String!): DiscordWebhookEvent!
+    receiveDiscordWebhookEvent(url: String!, events: [String]): DiscordWebhookEvent!
     registerUser(name: String, email : String, password : String) : User
     logInUser(email : String, password : String) : String 
 }
