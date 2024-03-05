@@ -287,5 +287,5 @@ export const resolvers = {
 };
 
 const generateToken = (user: any) => {
-  return jwt.sign({ user }, "secretito123", { expiresIn: "1h" });
+  return jwt.sign({ user }, "secret", { expiresIn: "1h" });
 };
